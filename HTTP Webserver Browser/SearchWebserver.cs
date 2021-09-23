@@ -9,6 +9,8 @@ namespace HTTP_Webserver_Browser
 {
     class SearchWebserver
     {
+        public string BaseUrl { get; set; }
+
         private string sub(string str, int begin, int end)
         {
             return str.Substring(begin, end - begin);
@@ -53,7 +55,6 @@ namespace HTTP_Webserver_Browser
             return Hrefs;
         }
 
-
         public List<string> SearchFolders(string url)
         {
             var Folders = new List<string>();
@@ -79,6 +80,24 @@ namespace HTTP_Webserver_Browser
                         Files.Add(href.HrefDir);
             }
             return Files;
+        }
+
+
+        List<string> SearchAllFolders_List = new List<string>();
+        public List<string> SearchAllFolders(string url)
+        {
+            SearchAllFolders_List.Clear();
+            var Folders = SearchFolders(url);
+            foreach (var Folder in Folders)
+                LoadSubDirs(Folder);
+            return SearchAllFolders_List;
+        }
+        public void LoadSubDirs(string dir)
+        {
+            SearchAllFolders_List.Add(dir);
+            var Folders = SearchFolders($"{BaseUrl}{dir}");
+            foreach (var Folder in Folders)
+                LoadSubDirs(Folder);
         }
     }
 }

@@ -12,24 +12,15 @@ namespace HTTP_Webserver_Browser
     class Program
     {
         static SearchWebserver a = new SearchWebserver();
-        static string baseurl = "http://172.24.30.1:6969";
+        static string BaseUrl = "http://172.24.30.1:6969";
         static void Main(string[] args)
         {
-            var Folders = a.SearchFolders($"{baseurl}/");
-            foreach (var Folder in Folders)
-                LoadSubDirs(Folder);
+            a.BaseUrl = BaseUrl;
 
-            var Files = a.SearchFiles($"{baseurl}/", ".mp3");
+            var Folders = a.SearchAllFolders($"{BaseUrl}/");
+            var Files = a.SearchFiles($"{BaseUrl}/", ".mp3");
 
             Console.ReadKey();
-        }
-
-        static void LoadSubDirs(string dir)
-        {
-            Console.WriteLine(dir);
-            var Folders = a.SearchFolders($"{baseurl}{dir}");
-            foreach (var Folder in Folders)
-                LoadSubDirs(Folder);
         }
     }
 }
