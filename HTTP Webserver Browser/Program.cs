@@ -15,7 +15,7 @@ namespace HTTP_Webserver_Browser
         static string BaseUrl = "http://172.24.30.1:6969";
         static void Main(string[] args)
         {
-            a.BaseUrl = BaseUrl;
+            //a.BaseUrl = BaseUrl;
 
             var Folders = a.SearchAllFolders($"{BaseUrl}/");
             var Files = a.SearchFiles($"{BaseUrl}/", ".mp3");
