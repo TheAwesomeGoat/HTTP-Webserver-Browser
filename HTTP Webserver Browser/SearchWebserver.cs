@@ -20,55 +20,63 @@ namespace HTTP_Webserver_Browser
                 return client.DownloadString(url);
         }
 
-        public List<string> SearchFolders(string url)
+        struct Href
+        {
+            public string FullHref;
+            public string HrefDir;
+            public string HrefText;
+        }
+        private List<Href> FindHrefs(string data)
         {
             int HrefBegin = 0;
+            var Hrefs = new List<Href>();
+            while (true)
+            {
+                HrefBegin = data.IndexOf("<a href=\"", HrefBegin + 1);
+                int HrefEnd = data.IndexOf("</a>", HrefBegin + 1) + 4;
+                int HrefDirEnd = data.IndexOf("\">", HrefBegin + 1);
+
+                if (HrefBegin == -1)
+                    break;
+
+                string FullHref = sub(data, HrefBegin, HrefEnd);
+                string HrefDir = sub(data, HrefBegin + 9, HrefDirEnd);
+                string HrefText = sub(data, HrefDirEnd + 2, HrefEnd - 4);
+
+                Hrefs.Add(new Href
+                {
+                    FullHref = FullHref,
+                    HrefDir = HrefDir,
+                    HrefText = HrefText
+                });
+            }
+            return Hrefs;
+        }
+
+
+        public List<string> SearchFolders(string url)
+        {
             var Folders = new List<string>();
             string data = Connect(url);
             if (data != null)
             {
-                while (true)
-                {
-                    HrefBegin = data.IndexOf("<a href=\"", HrefBegin + 1);
-                    int HrefEnd = data.IndexOf("</a>", HrefBegin + 1) + 4;
-                    int HrefDirEnd = data.IndexOf("\">", HrefBegin + 1);
-
-                    if (HrefBegin == -1)
-                        break;
-
-                    string FullHref = sub(data, HrefBegin, HrefEnd);
-                    string HrefDir = sub(data, HrefBegin + 9, HrefDirEnd);
-                    string HrefText = sub(data, HrefDirEnd + 2, HrefEnd - 4);
-
-                    if (!HrefDir.Contains("../") & HrefDir.EndsWith("/"))
-                        Folders.Add(HrefDir);
-                }
+                var Hrefs = FindHrefs(data);
+                foreach (var href in Hrefs)
+                    if (!href.HrefDir.Contains("../") & href.HrefDir.EndsWith("/"))
+                        Folders.Add(href.HrefDir);
             }
             return Folders;
         }
         public List<string> SearchFiles(string url, string extension)
         {
-            int HrefBegin = 0;
             var Files = new List<string>();
             string data = Connect(url);
             if (data != null)
             {
-                while (true)
-                {
-                    HrefBegin = data.IndexOf("<a href=\"", HrefBegin + 1);
-                    int HrefEnd = data.IndexOf("</a>", HrefBegin + 1) + 4;
-                    int HrefDirEnd = data.IndexOf("\">", HrefBegin + 1);
-
-                    if (HrefBegin == -1)
-                        break;
-
-                    string FullHref = sub(data, HrefBegin, HrefEnd);
-                    string HrefDir = sub(data, HrefBegin + 9, HrefDirEnd);
-                    string HrefText = sub(data, HrefDirEnd + 2, HrefEnd - 4);
-
-                    if (!HrefDir.Contains("../") & (HrefDir.EndsWith(extension) | extension == "*"))
-                        Files.Add(HrefDir);
-                }
+                var Hrefs = FindHrefs(data);
+                foreach (var href in Hrefs)
+                    if (!href.HrefDir.Contains("../") & (href.HrefDir.EndsWith(extension) | extension == "*"))
+                        Files.Add(href.HrefDir);
             }
             return Files;
         }
