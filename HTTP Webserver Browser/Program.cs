@@ -16,8 +16,8 @@ namespace HTTP_Webserver_Browser
         static void Main(string[] args)
         {
             //var Folders = a.SearchAllFolders($"{BaseUrl}/");
-            var Files = a.SearchFiles($"{BaseUrl}/", ".mp3");
-            var Files2 = a.SearchFiles($"{BaseUrl}/", ".mp3");
+            var mp3s = a.SearchFiles($"{BaseUrl}/", ".mp3");
+            var all = a.SearchFiles($"{BaseUrl}/", "*");
 
             Console.ReadKey();
         }

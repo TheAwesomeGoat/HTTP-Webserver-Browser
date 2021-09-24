@@ -54,9 +54,8 @@ namespace HTTP_Webserver_Browser
             return Hrefs;
         }
 
-        public List<string> SearchFolders(string url)
+        private string ContainsData(string url)
         {
-            var Folders = new List<string>();
             string data = "";
             if (!dataDict.ContainsKey(url))
             {
@@ -65,7 +64,13 @@ namespace HTTP_Webserver_Browser
             }
             else
                 data = dataDict[url];
+            return data;
+        }
 
+        public List<string> SearchFolders(string url)
+        {
+            var Folders = new List<string>();
+            string data = ContainsData(url);
             if (data != null)
             {
                 var Hrefs = FindHrefs(data);
@@ -78,15 +83,7 @@ namespace HTTP_Webserver_Browser
         public List<string> SearchFiles(string url, string extension)
         {
             var Files = new List<string>();
-            string data = "";
-            if (!dataDict.ContainsKey(url))
-            {
-                data = Connect(url);
-                dataDict.Add(url, data);
-            }
-            else
-                data = dataDict[url];
-
+            string data = ContainsData(url);
             if (data != null)
             {
                 var Hrefs = FindHrefs(data);
