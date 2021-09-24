@@ -9,6 +9,8 @@ namespace HTTP_Webserver_Browser
 {
     class SearchWebserver
     {
+        Dictionary<string, string> dataDict = new Dictionary<string, string>();
+
         private string sub(string str, int begin, int end)
         {
             return str.Substring(begin, end - begin);
@@ -19,7 +21,6 @@ namespace HTTP_Webserver_Browser
             using (WebClient client = new WebClient())
                 return client.DownloadString(url);
         }
-
         struct Href
         {
             public string FullHref;
@@ -56,7 +57,15 @@ namespace HTTP_Webserver_Browser
         public List<string> SearchFolders(string url)
         {
             var Folders = new List<string>();
-            string data = Connect(url);
+            string data = "";
+            if (!dataDict.ContainsKey(url))
+            {
+                data = Connect(url);
+                dataDict.Add(url, data);
+            }
+            else
+                data = dataDict[url];
+
             if (data != null)
             {
                 var Hrefs = FindHrefs(data);
@@ -69,7 +78,15 @@ namespace HTTP_Webserver_Browser
         public List<string> SearchFiles(string url, string extension)
         {
             var Files = new List<string>();
-            string data = Connect(url);
+            string data = "";
+            if (!dataDict.ContainsKey(url))
+            {
+                data = Connect(url);
+                dataDict.Add(url, data);
+            }
+            else
+                data = dataDict[url];
+
             if (data != null)
             {
                 var Hrefs = FindHrefs(data);
