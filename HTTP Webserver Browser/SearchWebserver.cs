@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -67,6 +68,38 @@ namespace HTTP_Webserver_Browser
             return data;
         }
 
+        public void CreateManifest(string url, List<string> Folders)
+        {
+            string filename = "manifest.txt";
+            if (File.Exists(filename))
+                File.Delete(filename);
+            foreach (var Folder in Folders)
+            {
+                var Files = SearchFiles($"{url}{Folder}", "*");
+                foreach (var file in Files)
+                {
+                    File.AppendAllText(filename, file+"\n");
+                    Console.WriteLine(file);
+                }
+            }
+        }
+
+
+        public List<string> SearchFiles(string url, string extension)
+        {
+            var Files = new List<string>();
+            string data = ContainsData(url);
+            if (data != null)
+            {
+                var Hrefs = FindHrefs(data);
+                foreach (var href in Hrefs)
+                    if (!href.HrefDir.Contains("../") & (href.HrefDir.EndsWith(extension) | (extension == "*" & !href.HrefDir.EndsWith("/"))))
+                        if (!(href.HrefDir.StartsWith("http://") | href.HrefDir.StartsWith("https://")))
+                            Files.Add(href.HrefDir);
+            }
+            return Files;
+        }
+
         public List<string> SearchFolders(string url)
         {
             var Folders = new List<string>();
@@ -80,20 +113,6 @@ namespace HTTP_Webserver_Browser
             }
             return Folders;
         }
-        public List<string> SearchFiles(string url, string extension)
-        {
-            var Files = new List<string>();
-            string data = ContainsData(url);
-            if (data != null)
-            {
-                var Hrefs = FindHrefs(data);
-                foreach (var href in Hrefs)
-                    if (!href.HrefDir.Contains("../") & (href.HrefDir.EndsWith(extension) | extension == "*"))
-                        Files.Add(href.HrefDir);
-            }
-            return Files;
-        }
-
 
         List<string> SearchAllFolders_List = new List<string>();
         public List<string> SearchAllFolders(string url)
@@ -106,6 +125,7 @@ namespace HTTP_Webserver_Browser
         }
         public void LoadSubDirs(string url, string dir)
         {
+            Console.WriteLine(dir);
             SearchAllFolders_List.Add(dir);
             var Folders = SearchFolders($"{url}{dir}");
             foreach (var Folder in Folders)

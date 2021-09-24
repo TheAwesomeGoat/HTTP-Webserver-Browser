@@ -15,10 +15,10 @@ namespace HTTP_Webserver_Browser
         static string BaseUrl = "http://172.24.30.1:6969";
         static void Main(string[] args)
         {
-            //var Folders = a.SearchAllFolders($"{BaseUrl}/");
-            var mp3s = a.SearchFiles($"{BaseUrl}/", ".mp3");
-            var all = a.SearchFiles($"{BaseUrl}/", "*");
-
+            var Folders = a.SearchAllFolders($"{BaseUrl}");
+            //var mp3s = a.SearchFiles($"{BaseUrl}/", ".mp3");
+            //var all = a.SearchFiles($"{BaseUrl}/", "*");
+            a.CreateManifest($"{BaseUrl}", Folders);
             Console.ReadKey();
         }
     }
